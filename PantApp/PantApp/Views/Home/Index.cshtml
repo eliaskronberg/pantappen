@@ -1,0 +1,89 @@
+﻿@model PantApp.Models.UserViewModel
+@{
+    ViewBag.Title = "Home Page";
+}
+
+
+<script>
+    $(document).ready(function(){
+
+        $("#recycleSmallCanBtn").click(function () {
+            recycle(1,@Model.Id);
+        });
+
+        $("#recycleBigCanButton").click(function () {
+            recycle(2,@Model.Id);
+
+        });
+
+        function recycle(value, userId){
+            $.ajax({
+                url: '/Home/Recycle',
+                type: 'POST',
+                dataType: "json",
+                data: JSON.stringify( { value: value, userId: userId } ),
+                contentType: "application/json",
+                success: function (jsonData) {
+                    $("#cancount").html(jsonData.newCanCount);
+                    $("#balance").html(jsonData.newBalance);
+                },
+                error: function () {
+                    //any error to be handled
+                }
+            });
+        }
+    });
+
+</script>
+
+<div class="jumbotron">
+    <h1 class="text-center">Pantmaskinen v1.0</h1>
+    @if (Model.Name == null)
+    {
+        using (Html.BeginForm())
+        {
+            @Html.TextBox("Name")
+            <button type="submit" class="btn btn-primary btn-lg">Logga in</button>
+
+        }
+    }else
+    {
+        <p class="text-center">Välkommen @Model.Name</p>
+        <div>
+            <table>
+                <tr>
+                    <th>Antal burkar pantade</th>
+                    <th>Pantsaldo</th>
+                </tr>
+                <tr>
+                    <td id="cancount">@Model.RecycledCans</td>
+                    <td id="balance">@Model.Balance</td>
+                </tr>
+            </table>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-4">
+                <button type="button" id="recycleSmallCanBtn" class="btn btn-success btn-lg">Panta liten burk</button>
+            </div>
+            <div class="col-md-4">
+                <button type="button" id="recycleBigCanButton" class="btn btn-success btn-lg">Panta stor burk</button>
+            </div>
+
+        </div>
+
+        using (Html.BeginForm())
+        {
+            <button type="submit" class="btn btn-primary btn-lg">Logga ut</button>
+
+        }
+
+
+    }
+
+
+</div>
+
+
+
